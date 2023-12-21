@@ -14,7 +14,7 @@ class xWAF {
 		$RawDataStr = trim(file_get_contents("php://input"));
 		$RawData = array();
 		if(!empty($RawDataStr)){
-			$RawData = json_decode($RawDataStr,320,1024,JSON_BIGINT_AS_STRING);
+			$RawData = json_decode($RawDataStr,true,1024,JSON_BIGINT_AS_STRING);
 			if(!$RawData){
 				$RawData['HTTP_RAW_POST_DATA_SADAN'] = $RawDataStr;
 			}
