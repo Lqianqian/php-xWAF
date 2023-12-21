@@ -11,6 +11,15 @@ class xWAF {
 		$this->IPHeader = "REMOTE_ADDR";
 		$this->CookieCheck = true;
 		$this->CookieCheckParam = 'username';
+		$RawDataStr = trim(file_get_contents("php://input"));
+		$RawData = array();
+		if(!empty($RawDataStr)){
+			$RawData = json_decode($RawDataStr,320,1024,JSON_BIGINT_AS_STRING);
+			if(!$RawData){
+				$RawData['HTTP_RAW_POST_DATA_SADAN'] = $RawDataStr;
+			}
+		}
+		$this->POST = array_merge($RawData, $_POST);
 		return true;
 	}
 	function shorten_string($string, $wordsreturned) {
@@ -39,8 +48,8 @@ class xWAF {
 				// . 匹配除换行符 \n 之外的任何单个字符
 				// .+ 匹配除换行符 \n 之外的任何多个字符
 				return array(
-							"'",
-							'´',
+							//"'",
+							//'´',
 							['SELECT[[:blank:]](.*)FROM'], // === ['SELECT ','FROM']
 							'ONION',
 							['UNION (.*)(select|UPDATE|insert|delete)'],
@@ -203,7 +212,7 @@ class xWAF {
 		}
 	}
 	function checkPOST() {
-		foreach ($_POST as $key => $value) {
+		foreach ($this->POST as $key => $value) {
 			if (is_array($value)) {
 				$flattened = $this->arrayFlatten($value);
 				foreach ($flattened as $sub_key => $sub_value) {
